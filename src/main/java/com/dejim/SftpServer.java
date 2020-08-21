@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
+
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -55,8 +57,8 @@ public class SftpServer {
 		sshd.setCipherFactories(Arrays.asList(BuiltinCiphers.aes256ctr, BuiltinCiphers.aes192ctr, BuiltinCiphers.aes128ctr));
 			
 		SftpSubsystemFactory factory = new SftpSubsystemFactory();
-		sshd.setSubsystemFactories(Arrays.<NamedFactory<Command>>asList(factory));
-
+		sshd.setSubsystemFactories(Collections.singletonList(factory));
+		
 		sshd.setPasswordAuthenticator(
 				(username, password, session) -> username.equals("mule") && password.equals(passwd));
 
