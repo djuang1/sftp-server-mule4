@@ -7,6 +7,27 @@
 ## Versions
 * Apache SSHD 2.5.1
 
+## Setup
+
+1. Configure the `sftp.password` properties file with a password
+
+    #### mule-properties.yaml
+    ```
+    sftp:
+    port: "8082"
+    password: "password"
+    ```
+1. Deploy to CloudHub
+1. Navigate to `http://<app-name>.<region>.cloudhub.io/sftp?action=start` to start the SFTP server
+
+## Use
+
+In order to connect to the SFTP server, you need to access it from the external IP address of the Mule worker. The address will be in the following format:
+
+```
+mule-worker-<app-name>.<region>.cloudhub.io:8082
+```
+
 ## Code
 
 Below is a snippet from the code that shows how to setup the SFTP server subsystem.
