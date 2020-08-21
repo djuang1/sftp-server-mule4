@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d1d1e35a-f9c3-4be2-b2ec-08e4cf51c718" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="0a19abe2-7251-44db-8953-5cdccf8b8d08" file="mule-properties.yaml" />
+	<flow name="sftp-serverFlow" doc:id="32a42a3b-dc4d-4361-8e4f-c6376da7ab1d" >
+		<http:listener doc:name="Listener" doc:id="1054f7e0-77fa-4a57-a19f-8990b8a86bfe" config-ref="HTTP_Listener_config" path="/sftp"/>
+		<set-variable value="#[attributes.queryParams.action]" doc:name="Set Variable" doc:id="e117485b-1b1a-45f4-b344-4d30acdd538b" variableName="action"/>
+		<java:new constructor="SftpServer(int,java.lang.String)" doc:name="New" doc:id="d67caa24-67c2-4242-9368-ddbc76ff9acc" class="com.dejim.SftpServer" >
+			<java:args ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	arg0: p('sftp.port'),
+	arg1: p('sftp.password')
+}]]]></java:args>
+		</java:new>
+		<choice doc:name="Choice" doc:id="865172b8-f903-4369-9a8b-fb8d702baf3f" >
+			<when expression='#[vars.action == "start"]'>
+				<java:invoke doc:name="Invoke" doc:id="c7536303-abb3-4e2d-bb48-3d87bf202327" instance="#[payload]" class="com.dejim.SftpServer" method="start()" />
+			</when>
+			<otherwise >
+				<java:invoke method="stop()" doc:name="Invoke" doc:id="7534841c-f5a2-451a-8f34-db935ca39b2a" instance="#[payload]" class="com.dejim.SftpServer"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="d63c42c0-f8d5-438b-b7d2-16568a2ebacb" />
+		<ee:transform doc:name="Transform Message" doc:id="d638a45f-79c9-4277-bede-537b0cfaf984" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
