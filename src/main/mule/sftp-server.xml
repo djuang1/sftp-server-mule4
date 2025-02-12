@@ -30,7 +30,6 @@ output application/java
 				<java:invoke method="stop()" doc:name="Invoke" doc:id="7534841c-f5a2-451a-8f34-db935ca39b2a" instance="#[payload]" class="com.dejim.SftpServer"/>
 			</otherwise>
 		</choice>
-		<logger level="INFO" doc:name="Logger" doc:id="d63c42c0-f8d5-438b-b7d2-16568a2ebacb" />
 		<ee:transform doc:name="Transform Message" doc:id="d638a45f-79c9-4277-bede-537b0cfaf984" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
